@@ -24,10 +24,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: execute py script to generate movie poster wall
-        run: python movies.py -i=49729399 -c=18 -r=8 -o=8 -rd=True
+        run: python image_wall.py -i=49729399 -c=18 -r=8 -o=8 -rd=True
 
       - name: execute py script to generate album cover wall
-        run: python movies.py -i=49729399 -m='music' -c=10 -r=8 -o=8 -rd=True
+        run: python image_wall.py -i=49729399 -m='music' -c=10 -r=8 -o=8 -rd=True
           
       - name: commit files
         run: |
