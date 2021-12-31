@@ -1,4 +1,4 @@
-name: generate-movie-poster-wall
+name: generate-image-wall
 
 on:
   schedule:
