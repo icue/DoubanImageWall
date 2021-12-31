@@ -24,7 +24,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: execute py script
-        run: python movies.py -i=49729399 -rd=True -t=0
+        run: python movies.py -i=49729399 -c=18 -r=8 -o=8 -rd=True
           
       - name: commit files
         run: |
