@@ -3,7 +3,7 @@
 读取豆瓣用户标记为“看过”的电影/“听过”的音乐，生成**电影海报墙**/**音乐专辑封面墙**。
 
 大小与排列方式可调。
-参考 [Workflow yml](.github/workflows/generate-image-wall.yml) 以使用 Github Actions 定时更新图片。
+参考 [Workflow yml](.github/workflows/generate-image-wall.yml) 以使用 GitHub Actions 定时更新图片。
 
 ### 效果图
 电影海报墙：
