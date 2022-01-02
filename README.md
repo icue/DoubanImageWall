@@ -15,7 +15,7 @@
 ### 使用方式
 ```
 pip install -r requirements.txt
-python ./image_wall.py -i={豆瓣 ID}
+python image_wall.py -i={豆瓣 ID}
 ```
 运行完毕后前往 output 文件夹查看成品图。
 
