@@ -32,7 +32,7 @@ python image_wall.py -i={豆瓣 ID}
 | rd | random | False| 是否随机排列所有图片 |
 | rt | rating | 0 | 按打星过滤，可用数字 1 到 5。设为 0 不过滤。 |
 | s | sort-by-time | False | 只按标记顺序，从近往远排列。默认排列方式为按照该用户给出的打分高低、再从近往远排列。 |
-| m | mode | `movie` | `movie`和`music`二选一。`movie`生成电影海报墙；`music`生成音乐专辑封面墙。设为`music`时，图片高度将等同于宽度。 |
+| m | mode | `movie` | `movie`和`music`二选一。`movie`生成电影海报墙；`music`生成音乐专辑封面墙。设为`music`时，小图片的高度将等同于宽度。 |
 | t | threshold | 300 | 允许保留缓存图片的最大数量。若设为 0，则每次运行后，未被本次运行读取到的缓存图片将全部被删除。 |
 | l | limit | 200 | 图片处理的最大数量。通常这个值需要高于列数乘以行数，以获得足够多的图片。 |
 |   | max-width | 4000 | 成品图的最大宽度（像素） |
