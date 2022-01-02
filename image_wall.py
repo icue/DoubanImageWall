@@ -28,6 +28,8 @@ parser.add_argument('-t', '--threshold', type=int, default=300,
                     'unused cache gets removed. Set to 0 to immediately remove unused cache after a run.')
 parser.add_argument('-l', '--limit', type=int, default=200,
                     help='Limit of number of items to process. Default is 200. Raise this when COL x ROW > 200.')
+parser.add_argument('--max-width', type=int, default=4000, help='Maximum width of the output in pixel number.')
+parser.add_argument('--max-height', type=int, default=8000, help='Maximum height of the output in pixel number.')
 args = parser.parse_args()
 _MUSIC_MODE = args.mode == 'music'
 _COLUMN_NUM = args.col
@@ -38,6 +40,7 @@ _CELL_HEIGHT = args.width if _MUSIC_MODE else args.height
 _WIDTH = _CELL_WIDTH * _COLUMN_NUM
 _HEIGHT = _CELL_HEIGHT * _ROW_NUM
 _CACHE = 'cache/'
+_OUTPUT = 'output/'
 
 larger_image_index = []
 if _OFFSET:
@@ -158,8 +161,9 @@ for j in range(0, _HEIGHT, _CELL_HEIGHT):
 
         result.paste(img.resize(size, Image.LANCZOS), (i, j))
 
-result.thumbnail((4000, 8000), Image.LANCZOS)
-result.save(f'{id}_{args.mode}.jpg', optimize=True, quaility=80)
+result.thumbnail((args.max_width, args.max_height), Image.LANCZOS)
+os.makedirs(_OUTPUT, exist_ok=True)
+result.save(f'{_OUTPUT}/{id}_{args.mode}.jpg', optimize=True, quaility=80)
 
 if len(cache_imgs) > args.threshold:
     for cached_img, used in cache_imgs.items():
