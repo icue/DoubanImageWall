@@ -10,7 +10,7 @@
 ![MoviePosterWall](output/49729399_movie.jpg?raw=true "MoviePosterWall")
 
 音乐专辑封面墙：
-![MusicAlbumCoverrWall](output/49729399_music.jpg?raw=true "MusicAlbumCoverrWall")
+![MusicAlbumCoverWall](output/49729399_music.jpg?raw=true "MusicAlbumCoverWall")
 
 ### 使用方式
 ```
