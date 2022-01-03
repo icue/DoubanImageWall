@@ -27,7 +27,7 @@ jobs:
         run: python image_wall.py -i=49729399 -c=18 -r=8 -o=8 -rd=True
 
       - name: execute py script to generate album cover wall
-        run: python image_wall.py -i=49729399 -m='music' -c=10 -r=8 -o=8 -rd=True
+        run: python image_wall.py -i=49729399 -m='music' -c=10 -r=8 -o=8 -rd=True -s=True
           
       - name: commit files
         run: |

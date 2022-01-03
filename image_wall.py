@@ -6,8 +6,8 @@ import requests
 import time
 from bs4 import BeautifulSoup
 from io import BytesIO
-from PIL import Image, UnidentifiedImageError
 from item import Item, get_next_img_url
+from PIL import Image, UnidentifiedImageError
 
 
 parser = argparse.ArgumentParser()
