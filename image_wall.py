@@ -25,7 +25,7 @@ parser.add_argument('-s', '--sort-by-time', type=bool, default=False,
 parser.add_argument('-m', '--mode', type=str, default='movie', choices=['book', 'movie', 'music'], help='"movie", "music" or "book". In "music" mode, cell height will be the same as cell width.')
 parser.add_argument('-t', '--threshold', type=int, default=300,
                     help='Number of cached images to pertain. Once the number goes beyond this threshold, '
-                    'unused cache gets removed. Set to 0 to immediately remove unused cache after a run.')
+                    'unused cache gets removed. Set to 0 to immediately remove unused cache after a run. Set to negative to disable cache.')
 parser.add_argument('-l', '--limit', type=int, default=200,
                     help='Limit of number of items to process. Default is 200. Raise this when COL x ROW > 200.')
 parser.add_argument('--max-width', type=int, default=4000, help='Maximum width of the output in pixel number.')
@@ -162,7 +162,8 @@ for j in range(0, _HEIGHT, _CELL_HEIGHT):
                     except:
                         print('Still failing! Giving up.')
                         continue
-            img.save(cache_img_name, optimize=True)
+            if args.threshold >= 0:
+                img.save(cache_img_name, optimize=True)
             time.sleep(3)
 
         result.paste(img.resize(size, Image.LANCZOS), (i, j))
@@ -173,6 +174,6 @@ result.save(f'{_OUTPUT}/{id}_{args.mode}.jpg', optimize=True, quaility=80)
 
 if len(cache_imgs) > args.threshold:
     for cached_img, used in cache_imgs.items():
-        if not used:
+        if not used or args.threshold < 0:
             print(f'Removing unused cache {cached_img}...')
             os.remove(cached_img)
