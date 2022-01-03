@@ -7,6 +7,7 @@ import time
 from bs4 import BeautifulSoup
 from io import BytesIO
 from PIL import Image, UnidentifiedImageError
+from item import Item, get_next_img_url
 
 
 parser = argparse.ArgumentParser()
@@ -72,49 +73,52 @@ urls = (f'https://{args.mode}.douban.com/people/{id}/collect?'
         for x in start)
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.113 Safari/537.36'}
 
-img_urls = []
+items = []
 enough_met = False
+rating_span_regex = re.compile('rating(\d)-t')
 for url in urls:
     headers['Referer'] = url
     response = requests.get(url, headers=headers).text
     soup = BeautifulSoup(response, features='html.parser')
-    items = soup.find_all('a', {'class': 'nbg'})
-    if not items:
+
+    item_divs = soup.find_all('div', {'class': 'item'})
+    if not item_divs:
         break
-    for a in items:
-        img_urls.append(a.find('img', recursive=False)['src'])
-        if len(img_urls) >= _COLUMN_NUM * _ROW_NUM - len(skip_image_index):
+    for item_div in item_divs:
+        name = item_div.find('em').text
+        img_url = item_div.find('a', {'class': 'nbg'}).find('img', recursive=False)['src']
+        rating = int(re.match(rating_span_regex, item_div.find('span', {'class': rating_span_regex})['class'][0])[1])
+        items.append(Item(name, img_url, rating))
+        if len(items) >= _COLUMN_NUM * _ROW_NUM - len(skip_image_index):
             enough_met = True
             break
     if enough_met:
         break
     time.sleep(5)
-if len(img_urls):
-    print(f'A total of {len(img_urls)} images to process.')
+if len(items):
+    print(f'A total of {len(items)} images to process.')
 else:
     print('Error: No image to process. HTTP request may have been blocked.')
     exit()
 if args.random:
-    random.shuffle(img_urls)
+    random.shuffle(items)
 
 os.makedirs(_CACHE, exist_ok=True)
 cache_imgs = {_CACHE + f: False for f in os.listdir(_CACHE) if os.path.isfile(_CACHE + f) and (f.lower().endswith('.jpg') or f.lower().endswith('.webp'))}
 
 result = Image.new('RGB', (_WIDTH, _HEIGHT))
 count = 0
-img_iter = iter(img_urls)
 for j in range(0, _HEIGHT, _CELL_HEIGHT):
     for i in range(0, _WIDTH, _CELL_WIDTH):
         if count in skip_image_index:
             count += 1
             continue
-        try:
-            image_url = next(img_iter)
-        except StopIteration:
+        need_large = count in larger_image_index
+        image_url = get_next_img_url(items, args.sort_by_time, need_large)
+        if not image_url:
             break
 
         size = (_CELL_WIDTH, _CELL_HEIGHT)
-        need_large = count in larger_image_index
         if need_large:
             size = (_CELL_WIDTH * 2, _CELL_HEIGHT * 2)
             if _MUSIC_MODE or _BOOK_MODE:
