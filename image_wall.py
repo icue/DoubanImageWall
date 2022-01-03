@@ -22,7 +22,7 @@ parser.add_argument('-rd', '--random', type=bool, default=False, help='Whether t
 parser.add_argument('-rt', '--rating', type=int, default=0, help='Rating filter. Only integers between 1 (one star) and 5 (five stars) are meaningful')
 parser.add_argument('-s', '--sort-by-time', type=bool, default=False,
                     help='Whether to sort chronologically (neareast first). Default is False, as default sort order is by rating.')
-parser.add_argument('-m', '--mode', type=str, default='movie', choices=['movie', 'music'], help='"movie" or "music". In "music" mode, cell height will be the same as cell width.')
+parser.add_argument('-m', '--mode', type=str, default='movie', choices=['book', 'movie', 'music'], help='"movie", "music" or "book". In "music" mode, cell height will be the same as cell width.')
 parser.add_argument('-t', '--threshold', type=int, default=300,
                     help='Number of cached images to pertain. Once the number goes beyond this threshold, '
                     'unused cache gets removed. Set to 0 to immediately remove unused cache after a run.')
@@ -32,6 +32,7 @@ parser.add_argument('--max-width', type=int, default=4000, help='Maximum width o
 parser.add_argument('--max-height', type=int, default=8000, help='Maximum height of the output in pixel number.')
 args = parser.parse_args()
 _MUSIC_MODE = args.mode == 'music'
+_BOOK_MODE = args.mode == 'book'
 _COLUMN_NUM = args.col
 _ROW_NUM = args.row
 _OFFSET = args.offset
@@ -74,6 +75,7 @@ headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 img_urls = []
 enough_met = False
 for url in urls:
+    headers['Referer'] = url
     response = requests.get(url, headers=headers).text
     soup = BeautifulSoup(response, features='html.parser')
     items = soup.find_all('a', {'class': 'nbg'})
@@ -87,7 +89,11 @@ for url in urls:
     if enough_met:
         break
     time.sleep(5)
-print(f'A total of {len(img_urls)} images to process.')
+if len(img_urls):
+    print(f'A total of {len(img_urls)} images to process.')
+else:
+    print('Error: No image to process. HTTP request may have been blocked.')
+    exit()
 if args.random:
     random.shuffle(img_urls)
 
@@ -111,11 +117,11 @@ for j in range(0, _HEIGHT, _CELL_HEIGHT):
         need_large = count in larger_image_index
         if need_large:
             size = (_CELL_WIDTH * 2, _CELL_HEIGHT * 2)
-            if _MUSIC_MODE:
+            if _MUSIC_MODE or _BOOK_MODE:
                 image_url = image_url.replace('subject/s', 'subject/l')
             else:
                 image_url = image_url.replace('s_ratio_poster', 'l_ratio_poster')
-        elif _MUSIC_MODE:
+        elif _MUSIC_MODE or _BOOK_MODE:
             image_url = image_url.replace('subject/s', 'subject/m')
         else:
             image_url = image_url.replace('s_ratio_poster', 'm_ratio_poster')
@@ -146,7 +152,7 @@ for j in range(0, _HEIGHT, _CELL_HEIGHT):
                 except:
                     print('Still failing! Trying again with larger image size...')
                     time.sleep(3)
-                    if _MUSIC_MODE:
+                    if _MUSIC_MODE or _BOOK_MODE:
                         image_url = image_url.replace('subject/l', 'subject/b').replace('subject/m', 'subject/l')
                     else:
                         image_url = image_url.replace('l_ratio_poster', 'b_ratio_poster').replace('m_ratio_poster', 'l_ratio_poster')
