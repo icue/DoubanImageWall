@@ -1,8 +1,9 @@
 name: generate-image-wall
 
 on:
-  schedule:
-    - cron: '0 6 * * *' # 6:00 UTC everyday
+  # Uncomment line 5 and line 6 to activate scheduled run.
+  # schedule:
+  #   - cron: '0 6 * * *' # 6:00 UTC everyday
   workflow_dispatch:
 
 jobs:
