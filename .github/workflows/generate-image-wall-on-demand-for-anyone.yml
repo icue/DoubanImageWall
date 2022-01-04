@@ -1,0 +1,59 @@
+name: generate-image-wall-demo-for-anyone
+
+on:
+  workflow_dispatch:
+    inputs:
+      doubanId:
+        description: 'douban id:'
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: ${{ github.workflow }}
+      cancel-in-progress: false
+
+    steps:
+
+      - name: checkout repo content
+        uses: actions/checkout@v2
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10.0'
+          
+      - name: install python packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: execute py script to generate movie poster wall
+        run: python image_wall.py -i=${{ github.event.inputs.doubanId }} -c=18 -r=8 -o=8 -rd=True
+
+      - name: execute py script to generate album cover wall
+        run: python image_wall.py -i=${{ github.event.inputs.doubanId }} -m='music' -c=10 -r=8 -o=8 -rd=True
+        
+      - name: commit caches
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add cache/
+          git commit -m "Update global image cache" -a
+          
+      - name: push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+          
+      - name: archive results
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.event.inputs.doubanId }}
+          retention-days: 1
+          path: |
+            output/${{ github.event.inputs.doubanId }}_movie.jpg
+            output/${{ github.event.inputs.doubanId }}_music.jpg
