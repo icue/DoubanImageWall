@@ -3,7 +3,7 @@
 读取豆瓣用户标记为“看过”的电影/“听过”的音乐/“读过”的图书，生成**电影海报墙**/**音乐专辑封面墙**/**图书封面墙**。
 
 大小与排列方式可调。
-参考 [Workflow yml](.github/workflows/generate-image-wall.yml) 以使用 GitHub Actions 定时更新图片。
+参考 [workflows 目录](.github/workflows/)以使用 GitHub Actions [更新图片](.github/workflows/generate-image-wall.yml) ，以及[输入任意豆瓣 ID 将运行结果存放于 workflow artifacts](.github/workflows/generate-image-wall-on-demand-for-anyone.yml)。
 
 ### 效果图
 电影海报墙：
