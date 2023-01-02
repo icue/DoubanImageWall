@@ -43,6 +43,7 @@ _WIDTH = _CELL_WIDTH * _COLUMN_NUM
 _HEIGHT = _CELL_HEIGHT * _ROW_NUM
 _CACHE = 'cache/'
 _OUTPUT = 'output/'
+_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.5359.128 Safari/537.36'
 
 larger_image_index = []
 if _OFFSET:
@@ -62,7 +63,7 @@ if args.id.isnumeric() or 'douban.com' not in args.id:
 else:
     match = re.match('.*people/(.*)/.*', args.id)
     if not match:
-        print('invalid id')
+        print('Invalid id.')
         exit()
     id = match[1]
 start = range(0, args.limit, 15)
@@ -71,7 +72,7 @@ urls = (f'https://{args.mode}.douban.com/people/{id}/collect?'
         f'&rating={"all" if args.rating<1 or args.rating>5 else args.rating}'
         f'&filter=all&mode=grid&tags_sort=count'
         for x in start)
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.113 Safari/537.36'}
+headers = {'User-Agent': _UA}
 
 items = []
 enough_met = False
@@ -81,11 +82,11 @@ for url in urls:
     response = requests.get(url, headers=headers).text
     soup = BeautifulSoup(response, features='html.parser')
 
-    item_divs = soup.find_all('div', {'class': 'item'})
+    item_divs = soup.find_all('li', {'class': 'subject-item'}) if _BOOK_MODE else soup.find_all('div', {'class': 'item'})
     if not item_divs:
         break
     for item_div in item_divs:
-        name = item_div.find('em').text
+        name = item_div.find('a', title=True)['title'] if _BOOK_MODE else item_div.find('em').text
         img_url = item_div.find('a', {'class': 'nbg'}).find('img', recursive=False)['src']
         rating_span = item_div.find('span', {'class': rating_span_regex})
         rating = int(re.match(rating_span_regex, rating_span['class'][0])[1]) if rating_span else 0
@@ -96,6 +97,7 @@ for url in urls:
     if enough_met:
         break
     time.sleep(5)
+
 if len(items):
     print(f'A total of {len(items)} images to process.')
 else:
