@@ -31,10 +31,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: execute py script to generate movie poster wall
-        run: python image_wall.py -i=${{ github.event.inputs.doubanId }} -c10 -r=24 -o=8 -rd=True
+        run: python image_wall.py -i=${{ github.event.inputs.doubanId }} -c=12 -r=20 -o=8 -rd=True
 
       - name: execute py script to generate album cover wall
-        run: python image_wall.py -i=${{ github.event.inputs.doubanId }} -m='music' -c=10 -r=8 -o=8 -rd=True
+        run: python image_wall.py -i=${{ github.event.inputs.doubanId }} -m='movie' -c=12 -r=20 -o=8 -rd=True
         
       - name: commit caches
         run: |
